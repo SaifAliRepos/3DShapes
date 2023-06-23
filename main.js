@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 const scene = new THREE.Scene();
@@ -5,6 +6,21 @@ scene.background = new THREE.Color(0x000022);
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.z = 8;
+
+
+// Adding background sounds
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+const audioLoader = new THREE.AudioLoader();
+const audio = new THREE.Audio(listener);
+
+audioLoader.load('/audios/angelical-pad-143276.mp3', function (buffer) {
+  audio.setBuffer(buffer);
+  audio.setLoop(true);
+  audio.setVolume(0.5);
+});
+
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -34,6 +50,7 @@ document.getElementById('moon').onclick = () => {
   shape.castShadow = true;
   shape.receiveShadow = true;
   scene.add(shape);
+  audio.play();
 };
 
 document.getElementById('planet').onclick = () => {
@@ -107,6 +124,14 @@ function animate() {
   renderer.render(scene, camera);
 }
 
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'hidden') {
+    audio.pause();
+  } else {
+    audio.play();
+  }
+});
+
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -116,3 +141,4 @@ function onWindowResize() {
 window.addEventListener('resize', onWindowResize, false);
 
 animate();
+
